@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:companion/Constants.dart';
-
+import 'dart:convert';
 
 
 class CustomBottomSheet extends StatefulWidget {
@@ -19,6 +19,8 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
 
   CalendarController _calendarController;
   TextEditingController _eventController;
+  SharedPreferences prefs;
+
   Map<DateTime,List<dynamic>> _events;
 
   @override
@@ -26,7 +28,17 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
     super.initState();
     _calendarController = CalendarController();
     _eventController=TextEditingController(text: DateTime.now().toString());
-    _events={}; 
+    _events={};
+    initprefs();
+  }
+
+  initprefs() async {
+    prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+    _events=Map<DateTime,List<dynamic>>.from(decodeMap(json.decode(prefs.getString("events") ?? "{}")));  
+    });
+    
   }
 
   @override
@@ -60,11 +72,10 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
         child: ListView(
           children: <Widget>[
             Icon(
-              Icons.line_weight,
+              Icons.remove,
               color: Colors.black,
+              size: 45.0,
             ),
-
-            SizedBox(height:20.0),
 
             Container(
               child: TableCalendar(
@@ -78,6 +89,9 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
                   weekdayStyle: TextStyle(color: Colors.black87)
                 ),
                 calendarController: _calendarController,
+                builders: CalendarBuilders(
+                  
+                ),
               ),
             ),
 
@@ -102,27 +116,28 @@ class _CustomBottomSheetState extends State<CustomBottomSheet> {
       builder: (context) => AlertDialog(
         content: TextField(
           controller: _eventController,
-        ),
-        actions: <Widget>[
-          RaisedButton(
-            child: Text("Add"),
-              onPressed: (){
-                if(_eventController.text.isEmpty) return;
-                setState(() {
-                  if(_events[_calendarController.selectedDay]!=null){
-                    _events[_calendarController.selectedDay].add
-                    (DateTime.now());   
-                  }else{
-                    _events[_calendarController.selectedDay]=
-                    [DateTime.now()];
-                  }
-                  _eventController.clear();
-                  Navigator.pop(context);
-                });
+        ),        
+      actions: <Widget>[
+        RaisedButton(
+          child: Text("Add"),
+          onPressed: (){
+            if(_eventController.text.isEmpty) return;
+            setState(() {
+              if(_events[_calendarController.selectedDay]!=null){
+                _events[_calendarController.selectedDay].add
+                (_eventController.text);   
+              }else{
+                _events[_calendarController.selectedDay]=
+                [_eventController.text];
               }
-            )
-        ],
-      )
-    );
-  }
+              prefs.setString("events", json.encode(encodeMap(_events)));
+              _eventController.clear();
+              Navigator.pop(context);
+            });
+          }
+        )
+      ],
+    )
+  );
+}
 }

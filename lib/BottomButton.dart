@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Widgets/Custom_bottom_sheet.dart';
+import 'package:line_icons/line_icons.dart';
 
 class BottomButton extends StatelessWidget {
 
@@ -24,7 +25,7 @@ class BottomButton extends StatelessWidget {
           width: double.infinity,
           height: 70.0,
           child: Icon(
-            Icons.calendar_today,
+            LineIcons.calendar,
             color: Color(0xFF333739),
             size: 30.0,
           ),

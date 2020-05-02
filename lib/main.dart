@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'TickerPage.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'Constants.dart';
+import 'StatsPage.dart';
+import 'Central.dart';
 
 
 void main(){
@@ -14,12 +15,18 @@ class Companion extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       darkTheme: ThemeData.dark().copyWith(
-        primaryColor: Color(0xFF333739),
-        scaffoldBackgroundColor: Color(0xFF333739),
+        primaryColor: kPrimaryColor,
+        scaffoldBackgroundColor:kPrimaryColor,
         backgroundColor: Color(0xFFF9F3F0),
         buttonColor:kButtonColor,
       ),
-      home: TickerPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => TickerPage(),
+        '/StatsPage': (context) => StatsPage(),
+        '/CentralPage': (context) => Central(),
+
+      },
     );
   }
 }  
